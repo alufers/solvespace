@@ -762,12 +762,16 @@ void Constraint::MenuConstrain(Command id) {
         }
 
         case Command::PARALLEL:
+            dbp("Hello hi from da parallel case\n");
             if(gs.faces == 2 && gs.n == 2) {
+                dbp("gs.faces == 2 && gs.n == 2");
                 c.type = Type::PARALLEL;
                 c.entityA = gs.face[0];
                 c.entityB = gs.face[1];            
                 newcons.push_back(c);
             } else if(gs.vectors > 1 && gs.vectors == gs.n) {
+                 dbp("gs.vectors > 1 && gs.vectors == gs.n");
+                 // we go here
                 c.type = Type::PARALLEL;
                 c.entityA = gs.vector[0];
                 for (std::vector<hEntity>::size_type k = 1; k < gs.vector.size();++k ){

@@ -1026,6 +1026,7 @@ void ConstraintBase::GenerateEquations(IdList<Equation,hEquation> *l,
                 // We can only use the z expression:
                 //   Expr *eq = a.Cross(b).z;
                 // but it's more efficient to write it in the terms of pseudo-scalar product:
+                dbp("constraineq");
                 Expr *eq = (a.x->Times(b.y))->Minus(a.y->Times(b.x));
                 AddEq(l, eq, 0);
             }

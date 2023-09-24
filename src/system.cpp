@@ -414,6 +414,14 @@ void System::FindWhichToRemoveToFixJacobian(Group *g, List<hConstraint> *bad, bo
     }
 }
 
+static bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
 SolveResult System::Solve(Group *g, int *rank, int *dof, List<hConstraint> *bad,
                           bool andFindBad, bool andFindFree, bool forceDofCheck)
 {
@@ -421,16 +429,32 @@ SolveResult System::Solve(Group *g, int *rank, int *dof, List<hConstraint> *bad,
 
     bool rankOk;
 
-/*
+
     int x;
     dbp("%d equations", eq.n);
     for(x = 0; x < eq.n; x++) {
-        dbp("  %.3f = %s = 0", eq[x].e->Eval(), eq[x].e->Print());
+        std::string eq_str = eq[x].e->Print();
+        for(int i = 0; i < param.n; i++) {
+            // dbp("   param %08x at %.3f", param[x].h.v, param[x].val);
+            std::string to_replace = ssprintf("param(%08x)", param[i].h.v);
+            std::string replace_with;
+            if(param[i].free) {
+                replace_with = ssprintf("p_%d", i);
+            } else {
+                replace_with = ssprintf("%.3f", param[i].val);
+            }
+            replace(eq_str, to_replace, replace_with);
+        }
+        dbp("  %.3f = %s = 0", eq[x].e->Eval(), eq_str.c_str());
     }
     dbp("%d parameters", param.n);
     for(x = 0; x < param.n; x++) {
-        dbp("   param %08x at %.3f", param[x].h.v, param[x].val);
-    } */
+        std::string is_free;
+        if(param[x].free) {
+            is_free = " (free)";
+        } 
+        dbp("   param %08x at %.3f%s", param[x].h.v, param[x].val, is_free.c_str());
+    }
 
     // All params and equations are assigned to group zero.
     param.ClearTags();
